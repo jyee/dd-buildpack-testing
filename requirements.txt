@@ -1,3 +1,5 @@
+blinker==1.4
 datadog==0.17.0
 ddtrace==0.10.0
 Flask==0.12.2
+gunicorn==19.7.1
