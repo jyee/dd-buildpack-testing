@@ -5,13 +5,13 @@ import os
 # Datadog tracing and metrics
 import blinker as _
 from datadog import initialize, api, statsd
-#from ddtrace import tracer
-#from ddtrace.contrib.flask import TraceMiddleware
+from ddtrace import tracer
+from ddtrace.contrib.flask import TraceMiddleware
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY')
 
-#traced_app = TraceMiddleware(app, tracer, service=os.environ.get('DD_HOSTNAME'))
+traced_app = TraceMiddleware(app, tracer, service=os.environ.get('DD_HOSTNAME'))
 
 debug = os.environ.get('DEBUG', False)
 if os.environ.get('DD_SERVICE_ENV') != 'production':
