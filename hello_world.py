@@ -1,6 +1,8 @@
 # Flask
 from flask import Flask, request
 import os
+import random
+import time
 
 # Datadog tracing and metrics
 import blinker as _
@@ -37,7 +39,7 @@ initialize(**options)
 def index():
     tags = ['env:' + os.environ.get('DD_SERVICE_ENV'), 'page:index']
     statsd.increment('studentpack.page.views', tags=tags)
-
+    time.sleep(random.randint(0,5))
     return "OHAI World!"
 
 
