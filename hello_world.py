@@ -6,7 +6,7 @@ import time
 
 # Datadog tracing and metrics
 import blinker as _
-from datadog import initialize, api, statsd
+from datadog import statsd
 from ddtrace import tracer
 from ddtrace.contrib.flask import TraceMiddleware
 
@@ -26,19 +26,11 @@ if debug:
     stream_handler.setLevel(logging.INFO)
     app.logger.addHandler(stream_handler)
 
-# Initialize Datadog
-options = {
-    'api_key': os.environ.get('DD_API_KEY'),
-    'app_key': os.environ.get('DD_APP_KEY')
-}
-initialize(**options)
-
-
 # Index page.
 @app.route('/')
 def index():
     tags = ['env:' + os.environ.get('DD_SERVICE_ENV'), 'page:index']
-    statsd.increment('studentpack.page.views', tags=tags)
+    statsd.increment('buildpack_testing.views', tags=tags)
     time.sleep(random.randint(0,5))
     return "OHAI World!"
 
