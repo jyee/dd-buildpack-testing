@@ -26,10 +26,12 @@ if debug:
     stream_handler.setLevel(logging.INFO)
     app.logger.addHandler(stream_handler)
 
+env = os.environ.get('DD_SERVICE_ENV')
+
 # Index page.
 @app.route('/')
 def index():
-    tags = ['env:' + os.environ.get('DD_SERVICE_ENV'), 'page:index']
+    tags = ['env: {}'.format(env), 'page:index']
     statsd.increment('buildpack_testing.views', tags=tags)
     time.sleep(random.randint(0,5))
     return "OHAI World!"
