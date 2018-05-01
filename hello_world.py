@@ -12,8 +12,9 @@ from ddtrace.contrib.flask import TraceMiddleware
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY')
+servicename = os.environ.get('DD_SERVICE_NAME')
 
-traced_app = TraceMiddleware(app, tracer, service=os.environ.get('DD_SERVICE_NAME'))
+traced_app = TraceMiddleware(app, tracer, service=servicename)
 
 debug = os.environ.get('DEBUG', False)
 if os.environ.get('DD_SERVICE_ENV') != 'production':
@@ -32,10 +33,39 @@ env = os.environ.get('DD_SERVICE_ENV')
 @app.route('/')
 def index():
     tags = ['env: {}'.format(env), 'page:index']
-    statsd.increment('buildpack_testing.views', tags=tags)
-    time.sleep(random.randint(0,5))
+    statsd.increment('webapp.pageviews', tags=tags)
+    time.sleep(random.random())
+    do1()
+    time.sleep(random.random())
     return "OHAI World!"
 
+@tracer.wrap(service=servicename)
+def do1():
+    print "doing 1"
+    time.sleep(random.random())
+    do2()
+    time.sleep(random.random())
+    do3()
+    time.sleep(random.random())
+    return True
+
+@tracer.wrap(service=servicename)
+def do2():
+    print "doing 2"
+    time.sleep(random.random())
+    if (random.randint(0,10) > 7):
+        do3()
+    time.sleep(random.random())
+    return True
+
+@tracer.wrap(service=servicename)
+def do3():
+    print "doing 3"
+    time.sleep(random.random())
+    if (random.randint(0,10) > 9):
+        do2()
+    time.sleep(random.random())
+    return True
 
 # Define error pages
 @app.errorhandler(404)
