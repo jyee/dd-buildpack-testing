@@ -1,1 +1,1 @@
-web: gunicorn hello_world:app --log-file -
+web: ruby hello_world.rb
