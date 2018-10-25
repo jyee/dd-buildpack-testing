@@ -10,24 +10,20 @@ from datadog import statsd
 from ddtrace import tracer
 from ddtrace.contrib.flask import TraceMiddleware
 
+# Setup Flask
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY')
 servicename = os.environ.get('DD_SERVICE_NAME')
+env = os.environ.get('DD_SERVICE_ENV')
 
 traced_app = TraceMiddleware(app, tracer, service=servicename)
 
-debug = os.environ.get('DEBUG', False)
-if os.environ.get('DD_SERVICE_ENV') != 'production':
-    debug = True
+# Setup additional logging.
+import logging
+stream_handler = logging.StreamHandler()
+stream_handler.setLevel(logging.INFO)
+app.logger.addHandler(stream_handler)
 
-# Setup additional logging when not on prod.
-if debug:
-    import logging
-    stream_handler = logging.StreamHandler()
-    stream_handler.setLevel(logging.INFO)
-    app.logger.addHandler(stream_handler)
-
-env = os.environ.get('DD_SERVICE_ENV')
 
 # Index page.
 @app.route('/')
@@ -79,4 +75,4 @@ def shit_happened(e):
 
 
 if __name__ == '__main__':
-    app.run(debug=debug)
+    app.run(debug=True)
